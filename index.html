@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gravity Motion Lab</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="particleField" aria-hidden="true"></canvas>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Interactive physics lab</p>
+        <h1>Gravity Motion Lab</h1>
+      </div>
+      <button id="themeToggle" class="icon-btn" type="button" title="Toggle theme">◐</button>
+    </header>
+
+    <section class="mission-band">
+      <div>
+        <p class="eyebrow">Core Mission</p>
+        <h2>Change velocity. Watch gravity choose the path.</h2>
+        <p>Launch a probe, compare worlds, ask the AI tutor, and learn why objects fall, orbit, crash, or escape.</p>
+      </div>
+      <div class="progress-wrap" aria-label="Course progress">
+        <span id="progressText">0% complete</span>
+        <div class="progress-track"><div id="progressFill"></div></div>
+      </div>
+    </section>
+
+    <nav class="module-nav" aria-label="Learning modules">
+      <button class="tab active" data-target="basics">Gravity Basics</button>
+      <button class="tab" data-target="simulator">Velocity & Orbit</button>
+      <button class="tab" data-target="planetLab">Planet Lab</button>
+      <button class="tab" data-target="quizZone">Quiz Arena</button>
+    </nav>
+
+    <section id="basics" class="learning-grid">
+      <article class="lesson-panel">
+        <p class="eyebrow">Module 1</p>
+        <h2>Gravity Basics</h2>
+        <p>Gravity is an attractive force between masses. More mass creates stronger pull, and greater distance weakens the pull. Weight changes from planet to planet, but mass stays the same.</p>
+        <div class="concept-map">
+          <div><b>Force</b><span>F = Gm1m2/r2</span></div>
+          <div><b>Acceleration</b><span>Earth pulls at about 9.8 m/s2</span></div>
+          <div><b>Weight</b><span>mass × local gravity</span></div>
+        </div>
+      </article>
+
+      <article class="animation-panel">
+        <div class="gravity-well">
+          <span class="well planet-dot"></span>
+          <span class="well mass-dot mass-a"></span>
+          <span class="well mass-dot mass-b"></span>
+          <span class="well ring ring-a"></span>
+          <span class="well ring ring-b"></span>
+        </div>
+        <div class="label-stack">
+          <button class="label-chip" data-title="What is gravity?" data-summary="Gravity is a force of attraction between objects that have mass. A planet pulls nearby objects toward its center. More mass creates stronger gravity, and greater distance makes gravity weaker.">What is gravity?</button>
+          <button class="label-chip" data-title="Mass vs weight" data-summary="Mass means how much matter an object has. Weight means how strongly gravity pulls that mass. Your mass is the same on Earth and the Moon, but your weight is lower on the Moon because lunar gravity is weaker.">Mass vs weight</button>
+          <button class="label-chip" data-title="Free fall" data-summary="Free fall means an object is moving only because of gravity. Ignoring air resistance, all objects accelerate at the same rate on the same planet. On Earth, that acceleration is about 9.8 m/s2.">Free fall</button>
+          <p id="basicAnswer" class="basic-answer">Click a topic to see the answer here.</p>
+        </div>
+      </article>
+    </section>
+
+    <section id="simulator" class="hero-grid" aria-label="Interactive gravity simulator">
+      <div class="sim-panel">
+        <div id="canvas-container" aria-label="3D orbit simulator"></div>
+        <div class="overlay-stats">
+          <div><span>Outcome</span><strong id="orbitState">Stable orbit</strong></div>
+          <div><span>Velocity</span><strong id="liveVelocity">7.90 km/s</strong></div>
+          <div><span>Altitude</span><strong id="liveAltitude">400 km</strong></div>
+          <div><span>Acceleration</span><strong id="liveAcceleration">8.69 m/s2</strong></div>
+          <div><span>Gravity Force</span><strong id="liveForce">8.69 kN</strong></div>
+          <div><span>Time</span><strong id="liveTime">0.0 s</strong></div>
+        </div>
+      </div>
+
+      <aside class="control-panel" aria-label="Simulation controls">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Launch Console</p>
+            <h2>Probe Controls</h2>
+          </div>
+          <button id="soundToggle" class="icon-btn" type="button" title="Toggle sound">♪</button>
+        </div>
+
+        <div class="control-group">
+          <label for="velocitySlider">Velocity <output id="velocityValue">7.9 km/s</output></label>
+          <input type="range" id="velocitySlider" min="1" max="18" value="7.9" step="0.1">
+        </div>
+        <div class="control-group">
+          <label for="angleSlider">Launch angle <output id="angleValue">0°</output></label>
+          <input type="range" id="angleSlider" min="-55" max="55" value="0" step="1">
+        </div>
+        <div class="control-group">
+          <label for="massSlider">Object mass <output id="massValue">1000 kg</output></label>
+          <input type="range" id="massSlider" min="100" max="8000" value="1000" step="100">
+        </div>
+        <div class="control-group">
+          <label for="gravitySlider">Gravity strength <output id="gravityValue">1.0x</output></label>
+          <input type="range" id="gravitySlider" min="0.05" max="3" value="1" step="0.05">
+        </div>
+
+        <div class="button-row">
+          <button id="playBtn" class="primary-btn" type="button">Pause</button>
+          <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
+          <button id="screenshotBtn" class="ghost-btn" type="button">Screenshot</button>
+        </div>
+
+        <div class="readout-stack">
+          <div><span>Circular speed</span><strong id="circularNumber">7.67 km/s</strong></div>
+          <div><span>Escape speed</span><strong id="escapeNumber">10.85 km/s</strong></div>
+          <div><span>Kinetic energy</span><strong id="energyNumber">31.2 GJ</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="learning-grid">
+      <article class="ai-panel">
+        <p class="eyebrow">AI Tutor System</p>
+        <h2>Ask a Doubt</h2>
+        <div class="prompt-row">
+          <input type="text" id="question" placeholder="Ask: why did the probe escape?">
+          <button id="askBtn" class="primary-btn" type="button">Ask</button>
+          <button id="speakBtn" class="ghost-btn" type="button">Speak</button>
+        </div>
+        <p id="answer">Change velocity or ask a question. The tutor explains crashes, orbits, and escape in simple English.</p>
+        <div class="button-row">
+          <button id="summaryBtn" class="ghost-btn" type="button">Generate Summary</button>
+          <button id="saveBtn" class="ghost-btn" type="button">Save Progress</button>
+        </div>
+      </article>
+
+      <article class="lesson-panel" id="modulePanel">
+        <p class="eyebrow">Module 2</p>
+        <h2>Velocity & Orbit Simulator</h2>
+        <p id="lessonText">Gravity pulls inward, while velocity carries the probe sideways. Low velocity falls back, orbital velocity circles, and escape velocity leaves the planet.</p>
+        <div class="concept-map">
+          <div><b>Too slow</b><span>falls or crashes</span></div>
+          <div><b>Balanced</b><span>stable orbit</span></div>
+          <div><b>Too fast</b><span>escape path</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="planetLab" class="planet-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Module 3</p>
+          <h2>Planet Comparison Lab</h2>
+        </div>
+        <div class="planet-picker" id="planetPicker" aria-label="Choose a planet"></div>
+      </div>
+      <div class="metrics-grid">
+        <article><span>Surface gravity</span><strong id="planetGravity">9.81 m/s2</strong><p>Sets how quickly falling objects gain speed.</p></article>
+        <article><span>Jump height</span><strong id="jumpHeight">0.51 m</strong><p>Same leg push, different world.</p></article>
+        <article><span>Fall speed after 3s</span><strong id="fallSpeed">29.4 m/s</strong><p>Velocity grows every second in free fall.</p></article>
+        <article><span>Projectile range</span><strong id="projectileRange">40.8 m</strong><p>Lower gravity lets the same throw travel farther.</p></article>
+      </div>
+    </section>
+
+    <section id="quizZone" class="quiz-panel" aria-label="Interactive quiz">
+      <div>
+        <p class="eyebrow">Quiz Arena</p>
+        <h2 id="quizTitle">Module Quiz</h2>
+        <p id="quizQuestion"></p>
+        <div class="progress-track quiz-track"><div id="quizProgress"></div></div>
+      </div>
+      <div id="quizOptions" class="quiz-options"></div>
+      <div id="dragZone" class="drag-zone"></div>
+      <div class="quiz-footer">
+        <p id="quizResult">Choose an answer for instant feedback.</p>
+        <strong id="scoreText">Score: 0/0</strong>
+      </div>
+    </section>
+  </main>
+
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="firebase-db.js"></script>
+  <script type="module" src="script.js"></script>
+  <script src="ai.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>
