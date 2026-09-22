@@ -1,4 +1,4 @@
-import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+// THREE is loaded globally via index.html
 
 const EARTH_RADIUS_KM = 6371;
 const EARTH_MU = 398600.4418;
