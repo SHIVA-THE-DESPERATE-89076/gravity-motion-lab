@@ -1,4 +1,4 @@
-const DEFAULT_GEMINI_API_KEY = "AIzaSyBSfj3753Yg-07AehpNgExGev1N6u4cL9g";
+const DEFAULT_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 const GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest"];
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -98,9 +98,12 @@ async function callGemini(apiKey, question) {
 
   for (const model of models) {
     const modelPath = model.startsWith("models/") ? model : `models/${model}`;
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelPath}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelPath}:generateContent`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey
+      },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: buildPrompt(question) }] }],
         generationConfig: { temperature: 0.45, maxOutputTokens: 700 }
@@ -119,7 +122,9 @@ async function getAvailableGeminiModels(apiKey) {
   if (cachedModels) return cachedModels;
 
   try {
-    const response = await fetch(`${GEMINI_API_BASE}?key=${encodeURIComponent(apiKey)}`);
+    const response = await fetch(GEMINI_API_BASE, {
+      headers: { "x-goog-api-key": apiKey }
+    });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error?.message || "Could not list Gemini models.");
     const available = (data.models || [])
