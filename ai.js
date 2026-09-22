@@ -1,4 +1,4 @@
-const DEFAULT_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+const DEFAULT_GEMINI_API_KEY = "";
 const GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest"];
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -28,7 +28,14 @@ function getTutorState() {
 }
 
 function getGeminiApiKey() {
-  return sessionStorage.getItem("gemini-api-key") || DEFAULT_GEMINI_API_KEY;
+  let key = localStorage.getItem("gemini-api-key");
+  if (!key) {
+    key = prompt("Please enter your Gemini API Key to use the AI Tutor:");
+    if (key) {
+      localStorage.setItem("gemini-api-key", key);
+    }
+  }
+  return key || DEFAULT_GEMINI_API_KEY;
 }
 
 function buildPrompt(question) {
@@ -82,7 +89,7 @@ async function askAI(customQuestion) {
   } catch (error) {
     console.error(error);
     if (/denied access|api key|permission|forbidden|403/i.test(error.message)) {
-      sessionStorage.removeItem("gemini-api-key");
+      localStorage.removeItem("gemini-api-key");
     }
     answerBox.textContent = `AI request failed: ${error.message}`;
     lastNarration = "";
