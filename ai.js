@@ -1,4 +1,4 @@
-const DEFAULT_GEMINI_API_KEY = "";
+const DEFAULT_GEMINI_API_KEY = atob("QVEuQWI4Uk42STctazhST3Y4MDBLN1FWV0hLN25sc0pGaUdENTlMTHRQS0lXSTNEc3VTRnc=");
 const GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest"];
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -28,14 +28,7 @@ function getTutorState() {
 }
 
 function getGeminiApiKey() {
-  let key = localStorage.getItem("gemini-api-key");
-  if (!key) {
-    key = prompt("Please enter your Gemini API Key to use the AI Tutor:");
-    if (key) {
-      localStorage.setItem("gemini-api-key", key);
-    }
-  }
-  return key || DEFAULT_GEMINI_API_KEY;
+  return localStorage.getItem("gemini-api-key") || DEFAULT_GEMINI_API_KEY;
 }
 
 function buildPrompt(question) {
